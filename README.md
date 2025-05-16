@@ -50,5 +50,6 @@ http://localhost:(depends on hisr port available)
 Your initial setup is complete!
 
 Next, we'll integrate authentication using Supabase.
+for the supabase install the dependencies on your terminal 
 
 

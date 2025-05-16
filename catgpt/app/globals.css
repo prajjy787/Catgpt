@@ -24,3 +24,36 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+
+/* Add to your app/globals.css */
+.paw-bg {
+  background: repeating-linear-gradient(
+      135deg,
+      #222 0px,
+      #222 2px,
+      transparent 2px,
+      transparent 20px
+    ),
+    repeating-linear-gradient(
+      45deg,
+      #222 0px,
+      #222 2px,
+      transparent 2px,
+      transparent 20px
+    );
+  background-color: #fff;
+  position: relative;
+}
+
+.paw-bg::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url('https://em-content.zobj.net/source/microsoft-teams/337/paw-prints_1f43e.png');
+  opacity: 0.04;
+  background-size: 80px 80px;
+  background-repeat: repeat;
+  pointer-events: none;
+  z-index: 0;
+}
