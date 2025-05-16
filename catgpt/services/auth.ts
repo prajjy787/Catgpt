@@ -1,6 +1,8 @@
+// lib/auth.ts
 import { supabase } from './supabaseClient';
+import type { AuthError, Session, User } from '@supabase/supabase-js';
 
-// Signup function: creates a new user with email and password
+// Signup: email/password
 export const signUp = async (email: string, password: string) => {
   const { data, error } = await supabase.auth.signUp({
     email,
@@ -9,7 +11,7 @@ export const signUp = async (email: string, password: string) => {
   return { data, error };
 };
 
-// Login function: authenticates a user with email and password
+// Sign-in: email/password
 export const signIn = async (email: string, password: string) => {
   const { data, error } = await supabase.auth.signInWithPassword({
     email,
@@ -18,14 +20,25 @@ export const signIn = async (email: string, password: string) => {
   return { data, error };
 };
 
-// Logout function: signs the current user out
-export const signOut = async () => {
+// Sign-out
+export const signOut = async (): Promise<AuthError | null> => {
   const { error } = await supabase.auth.signOut();
   return error;
 };
 
-// Get current user: returns the authenticated user object or null
-export const getCurrentUser = async () => {
+// Get current user
+export const getCurrentUser = async (): Promise<User | null> => {
   const { data, error } = await supabase.auth.getUser();
   return error ? null : data.user;
+};
+
+// Google OAuth login
+export const signInWithGoogle = async () => {
+  if (typeof window === 'undefined') return;
+  return await supabase.auth.signInWithOAuth({
+    provider: 'google',
+    options: {
+      redirectTo: `${window.location.origin}/home`,
+    },
+  });
 };

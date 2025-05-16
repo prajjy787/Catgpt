@@ -2,6 +2,8 @@
 import React, { useState, useEffect } from 'react';
 import { signIn, getCurrentUser } from '../../services/auth';
 import { useRouter } from 'next/navigation';
+import { signInWithGoogle } from '../../services/auth'; // for sign in with google
+
 
 // Optional: You can move the paw image URL to your public folder for better performance
 const PAW_IMG_URL =
@@ -79,6 +81,18 @@ const LoginPage: React.FC = () => {
         >
           Login
         </button>
+        <button
+  onClick={signInWithGoogle}
+  className="mt-4 flex items-center justify-center gap-2 bg-white border border-gray-300 text-gray-800 px-6 py-3 rounded-full w-full shadow hover:bg-gray-50 transition"
+>
+  <img
+    src="https://www.svgrepo.com/show/475656/google-color.svg"
+    alt="Google"
+    className="w-5 h-5"
+  />
+  Continue with Google
+</button>
+
         {errorMsg && (
           <div className="bg-red-100 text-red-700 p-2 rounded mt-4 w-full text-center">
             {errorMsg}
