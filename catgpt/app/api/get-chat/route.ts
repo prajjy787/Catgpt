@@ -8,9 +8,9 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
-export async function GET(req: NextRequest) {
-  const url = new URL(req.url);
-  const id = url.searchParams.get('id');
+export async function GET(req: NextRequest) {                                      // Handle GET requests to fetch a specific chat session
+  const url = new URL(req.url);                                                    // Parse the request URL                          
+  const id = url.searchParams.get('id');                                          // Extract the chat ID from the query parameters
   if (!id) {
     return NextResponse.json({ error: 'Chat ID is required' }, { status: 400 });
   }
@@ -26,14 +26,14 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'Invalid authentication' }, { status: 401 });
   }
 
-  const { data } = await supabase
+  const { data } = await supabase                                             // Fetch the chat session for the authenticated user
     .from('chat_sessions')
     .select('*')
     .eq('id', id)
     .eq('user_id', user.id)
     .single();
 
-  if (!data) {
+  if (!data) {                                                                // If the chat session is not found, return an error response                     
     return NextResponse.json({ error: 'Chat not found' }, { status: 404 });
   }
 

@@ -48,28 +48,31 @@ export default function ChatPage() {
 
     try {
       const res = await fetch('/api/ask-cat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: input }),
+        method: 'POST',                                          // send the message to the API
+        headers: { 'Content-Type': 'application/json' },         // set the content type to JSON
+        body: JSON.stringify({ message: input }),                // convert the message to JSON      
       });
-      const data = await res.json();
-      const catReply: Message = { from: 'cat', text: data.reply };
-      setMessages((prev) => [...prev, catReply]);
+      const data = await res.json();                               // handle the response from the API
+      const catReply: Message = { from: 'cat', text: data.reply }; // get the reply from the API
+      setMessages((prev) => [...prev, catReply]);                  // add the reply to the messages
 
       if (userId) {
-        await saveChat([...messages, userMsg, catReply]);
+        await saveChat([...messages, userMsg, catReply]);     // save the chat to the database 
       }
     } catch {
-      setMessages((prev) => [...prev, { from: 'cat', text: 'Meow! Something went wrong.' }]);
+      setMessages((prev) => [...prev, { from: 'cat', text: 'Meow! Something went wrong.' }]); // handle errors
     } finally {
-      setLoading(false);
+      setLoading(false);                                                                      // reset loading state
     }
   };
 
-  const saveChat = async (msgs: Message[]) => {
-    if (!userId || msgs.length === 0) return;
-    const title = msgs[0]?.text.slice(0, 30) || 'New Chat';
-    const res = await fetch('/api/save-chat', {
+
+
+  // function to save the chat to the database
+  const saveChat = async (msgs: Message[]) => { 
+    if (!userId || msgs.length === 0) return;                            // check if user is logged in and messages are not empty
+    const title = msgs[0]?.text.slice(0, 30) || 'New Chat';              // set the title of the chat
+    const res = await fetch('/api/save-chat', {                          // send the chat to the API
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -79,33 +82,33 @@ export default function ChatPage() {
         messages: msgs,
       }),
     });
-    const saved = await res.json();
-    if (!activeSessionId && saved.id) {
-      setActiveSessionId(saved.id);
-      setSessions((prev) => [...prev, { id: saved.id, title }]);
+    const saved = await res.json();                                     // handle the response from the API
+    if (!activeSessionId && saved.id) {                                 // check if there is no active session and a new chat is created
+      setActiveSessionId(saved.id);                                    // set the new  chat session ID                           
+      setSessions((prev) => [...prev, { id: saved.id, title }]);       // add the new chat session to the list
       loadChatHistory();
     }
   };
 
-  const loadChat = async (chatId: string) => {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) return;
+  const loadChat = async (chatId: string) => {                           // load a specific chat
+    const { data: { session } } = await supabase.auth.getSession();      // get the current session
+    if (!session) return;                                             // check if session exists  
 
-    const res = await fetch(`/api/get-chat?id=${chatId}`, {
+    const res = await fetch(`/api/get-chat?id=${chatId}`, {           // send the chat ID to the API
       method: 'GET',
-      headers: { Authorization: `Bearer ${session.access_token}` },
+      headers: { Authorization: `Bearer ${session.access_token}` },   // set the authorization header
     });
-    const chat = await res.json();
-    setMessages(chat.messages || []);
-    setActiveSessionId(chat.id);
+    const chat = await res.json();                                    // handle the response from the API
+    setMessages(chat.messages || []);                            // set the messages to the chat messages 
+    setActiveSessionId(chat.id);                                    // set the active session ID                    
   };
 
-  const loadChatHistory = async () => {
+  const loadChatHistory = async () => {                                 // load the chat history
     setIsLoadingHistory(true);
-    const { data: { session } } = await supabase.auth.getSession();
+    const { data: { session } } = await supabase.auth.getSession();      // get the current session
     if (!session) return;
 
-    const res = await fetch('/api/get-chat-history', {
+    const res = await fetch('/api/get-chat-history', {                 // send the request to the API
       method: 'GET',
       headers: { Authorization: `Bearer ${session.access_token}` },
     });

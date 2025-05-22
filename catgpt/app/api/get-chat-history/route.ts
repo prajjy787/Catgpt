@@ -7,19 +7,19 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-export async function GET(req: NextRequest) {
-  const authHeader = req.headers.get('authorization');
+export async function GET(req: NextRequest) {                      // Handle GET requests to fetch chat history
+  const authHeader = req.headers.get('authorization');           
   if (!authHeader?.startsWith('Bearer ')) {
     return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
   }
 
-  const token = authHeader.replace('Bearer ', '');
+  const token = authHeader.replace('Bearer ', '');                      // Extract the token from the authorization header
   const { data: { user } } = await supabase.auth.getUser(token);
   if (!user) {
     return NextResponse.json({ error: 'Invalid authentication' }, { status: 401 });
   }
 
-  const { data } = await supabase
+  const { data } = await supabase                                       // Fetch chat history for the authenticated user                        
     .from('chat_sessions')
     .select('id, title, created_at, updated_at, messages')
     .eq('user_id', user.id)

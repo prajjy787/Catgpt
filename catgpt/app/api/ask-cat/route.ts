@@ -1,16 +1,16 @@
 import { NextRequest } from "next/server";
 
-export async function POST(req: NextRequest) {
-  const body = await req.json();
-  const message = body.message;
+export async function POST(req: NextRequest) {          // Handle POST requests to interact with the OpenRouter API
+  const body = await req.json();                      // Parse the request body             
+  const message = body.message;                     // Extract the message from the request body        
 
-  const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+  const response = await fetch("https://openrouter.ai/api/v1/chat/completions", { // Send a POST request to the OpenRouter API
     method: "POST",
     headers: {
       "Authorization": `Bearer ${process.env.OPENROUTER_API_KEY}`,
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({
+    body: JSON.stringify({                      // Create the request body for the OpenRouter API
       model: "openai/gpt-3.5-turbo",
       messages: [
         { role: "system", content: "You are a cute, funny cat that answers in a cat-like way." },
@@ -19,20 +19,20 @@ export async function POST(req: NextRequest) {
     }),
   });
 
-  const data = await response.json();
+  const data = await response.json();  // Handle the response from the OpenRouter API
 
-  if (!response.ok) {
-    return new Response(JSON.stringify(data), { status: response.status });
+  if (!response.ok) {                // Check if the response is not OK
+    return new Response(JSON.stringify(data), { status: response.status }); // Return the error response
   }
 
-  // Extract just the text content from the first choice
-  const chatText = data.choices?.[0]?.message?.content || "No reply";
+  
+  const chatText = data.choices?.[0]?.message?.content || "No reply"; // Get the chat text from the response
 
   return new Response(
-    JSON.stringify({ reply: chatText }),
+    JSON.stringify({ reply: chatText }),   // Return the chat text in JSON format
     {
-      status: 200,
-      headers: { "Content-Type": "application/json" },
+      status: 200,                                // Set the response status to 200
+      headers: { "Content-Type": "application/json" }, // Set the content type to JSON
     }
   );
 }
