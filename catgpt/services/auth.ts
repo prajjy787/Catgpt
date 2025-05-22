@@ -1,4 +1,4 @@
-// lib/auth.ts
+// services/auth.ts
 import { supabase } from './supabaseClient';
 import type { AuthError, Session, User } from '@supabase/supabase-js';
 
@@ -26,8 +26,17 @@ export const signOut = async (): Promise<AuthError | null> => {
   return error;
 };
 
+// Get current session
+export const getSession = async (): Promise<Session | null> => {
+  const { data, error } = await supabase.auth.getSession();
+  return error ? null : data.session;
+};
+
 // Get current user
 export const getCurrentUser = async (): Promise<User | null> => {
+  const session = await getSession();
+  if (!session) return null;
+
   const { data, error } = await supabase.auth.getUser();
   return error ? null : data.user;
 };

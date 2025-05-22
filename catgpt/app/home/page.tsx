@@ -1,32 +1,48 @@
 'use client';
-import React, { useEffect } from 'react';
+
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { getCurrentUser, signOut } from '../../services/auth';
 
-const HomePage: React.FC = () => {
+const HomePage = () => {
+  const [userEmail, setUserEmail] = useState('');
   const router = useRouter();
 
   useEffect(() => {
-    // Redirect to /login if user is not logged in
     getCurrentUser().then(user => {
-      if (!user) router.replace('/login');
+      if (!user) {
+        router.replace('/');
+      } else {
+        setUserEmail(user.email ?? '');
+      }
     });
   }, [router]);
 
   const handleLogout = async () => {
     await signOut();
-    router.push('/login');
+    router.replace('/');
   };
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen">
-      <h1 className="text-3xl font-bold mb-8">Welcome to CatGPT! 🐱</h1>
-      <button
-        onClick={handleLogout}
-        className="bg-red-500 text-white px-4 py-2 rounded"
-      >
-        Logout
-      </button>
+    <div className="min-h-screen flex flex-col items-center justify-center bg-yellow-100 p-6">
+      <span className="text-6xl mb-4 animate-bounce">🐾</span>
+      <h1 className="text-4xl font-bold text-gray-800 mb-4">Welcome to CatGPT! 🐱</h1>
+      <p className="text-lg text-gray-600 mb-6">Logged in as: <strong>{userEmail}</strong></p>
+
+      <div className="flex gap-4">
+        <button
+          onClick={() => router.push('/chat')}
+          className="bg-purple-600 text-white px-6 py-3 rounded-full hover:bg-purple-700 transition"
+        >
+          Start Chatting
+        </button>
+        <button
+          onClick={handleLogout}
+          className="bg-gray-800 text-white px-6 py-3 rounded-full hover:bg-gray-900 transition"
+        >
+          Logout
+        </button>
+      </div>
     </div>
   );
 };
